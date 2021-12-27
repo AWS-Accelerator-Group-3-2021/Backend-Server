@@ -6,6 +6,8 @@ makes sure the index.html is in a sub-floder called templates
 
 do not change the name "application.py" if not flask wont work (idky soo just do it, dont ask)
 
+please add all combustible object names into the combustiblelist.csv file 
+
 
 the output will be something like this [[plant,wood],[metal]]
 it is two list in a list -> [ combustible_list , noncombustible_list ]
