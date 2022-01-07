@@ -18,7 +18,33 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+####s3 part #####
+class S3:
+    ## Uploading a file to S3
+    @staticmethod
+    def upload_file(file_name, s3FilePath):
+        try:
+            s3.upload_file(file_name, 'bennawsbucket', s3FilePath)
+            print('Uploaded file: ' + str(file_name))
+            return True
+        except:
+            print("Error uploading file: ", file_name)
+            return False
+    
+    ## Deleting a file from S3
+    @staticmethod
+    def delete_file(s3FilePath):
+        try:
+            s3.delete_object(Bucket='bennawsbucket', Key=s3FilePath)
+            print('Deleted file: ' + str(s3FilePath))
+            return True
+        except:
+            print("Error deleting file: ", s3FilePath)
+            return False
 
+ 
+ 
+ 
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -48,16 +74,27 @@ def upload_image():
         #flash('Image successfully uploaded and displayed below')
         #return render_template('index.html', filename=filename)
     
-        session = boto3.Session(profile_name='default', region_name='us-east-1')
+        session = boto3.Session(profile_name='default',region_name='us-east-1')
 
-        #client stuff
-        client = session.client('rekognition')
+        s3 = session.client('s3')
+        
+        ## PART WHERE A FILE IS TO BE UPLOADED TO S3
+        for file in os.listdir(os.path.join(os.getcwd(), 'myfolder')):
+            S3.upload_file(os.path.join(os.getcwd(), 'myfolder', file), 'myfolder/{}'.format(file))
+
+
+      
+        #print('upload_image filename: ' + filename)
+        #flash('Image successfully uploaded and displayed below')
+        #return render_template('index.html', filename=filename)
+    
+        session_re = boto3.Session(profile_name='default', region_name='us-east-1')
+        
+        client = session_re.client('rekognition')
 
         #with open('./cat.png','rb') as source_image:
         #    base64string = source_image.read()
-
-
-
+        
 
 
         response = client.detect_labels(Image ={'Bytes':source_bytes},
