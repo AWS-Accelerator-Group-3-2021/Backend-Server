@@ -1,37 +1,52 @@
 # flaskrecocombus
-flask+reco+combus
+### Facilitates the communication between Android/iOS and Rekognition
+#### Uses Flask as a medium, S3 for storage and Rekognition for object detection
 
 
-makes sure the index.html is in a sub-floder called templates
 
-do not change the name "application.py" if not flask wont work (idky soo just do it, dont ask)
+## Usage
 
-please add all combustible object names into the combustiblelist.csv file 
-
-
-the output will be something like this [[plant,wood],[metal]]
-it is two list in a list -> [ combustible_list , noncombustible_list ]
+Add all combustible objects into ```combustiblelist.csv```
 
 
-html is just for me(ben) to test if the flask is working
+## Output
+A nested list will be generated  
+<br>
+``` [ ["combustible_item1", ...], ["incombustible_item1", ...] ]```  
+<br>
+Index 0 - Combustible list  
+Index 1 - Incombustible list
 
-if u want to see the pic after uploading it, just type /display/"ur pic name put here " after the link 
-e.g. -> if your link at first is http://127.0.0.1:5000/ and the pic file name is cat.png then just put http://127.0.0.1:5000/display/cat.png
+## Test Cases
+```OriginURL/display/<picture_name>```  
+<br>
+e.g. if your link is ```http://127.0.0.1:5000/``` and the pic file name is cat.png, do ```http://127.0.0.1:5000/display/cat.png``` to see the picture that you have uploaded
 
-# storing of the keys
-store keys in ./aws folder
-the filename for the secret keys must be called credentials
-# steps for keys (if dont have the folder yet too)
+## Credentials
+
+Store keys in ```.aws``` folder  
+Filename to store keys in is ```credentials``` (Follows the AWS SDK Documentation for Boto3)  
+```
+If you are using terminal:
+
 cd
 mkdir ./aws
 cd ./aws
 touch credentials
 nano credentials
-"paste the whole key here remember to also put the [default] in too '"
-control o
-enter
-control x
-"if they ask u yes or no just put y"
 
+<< Text editor will pop up in the terminal, follow on screen instructions and save the file >>
+```
 
+## Usage with Localstack
+
+Change the endpoint_url to your localstack link
+```
+endpoint_url = "http://localhost.localstack.cloud:4566"
+...
+session = boto3.Session(region_name='us-east-1')
+
+s3 = session.client('s3', endpoint_url=endpoint_url)
+
+```
  
