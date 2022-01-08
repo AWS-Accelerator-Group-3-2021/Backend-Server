@@ -1,4 +1,4 @@
-# flaskrecocombus
+# Backend Server
 ### Facilitates the communication between Android/iOS and Rekognition
 #### Uses Flask as a medium, S3 for storage and Rekognition for object detection
 
