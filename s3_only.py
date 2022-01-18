@@ -4,11 +4,15 @@ import csv
 import boto3
 from flask import Flask, flash, request, redirect, url_for, render_template
 from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 import urllib.request
 import os
 from werkzeug.utils import secure_filename
-endpoint_url = "http://localhost.localstack.cloud:4566"
+load_dotenv()
 app = Flask(__name__)
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
 UPLOAD_FOLDER = 'static/uploads/'
 key = "/.aws/credentials"
@@ -46,6 +50,7 @@ def upload_file(file_name, bucket, object_name=None):
         return False
     return "complete"
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -75,18 +80,17 @@ def upload_image():
 
         session = boto3.Session(region_name='us-east-1')
 
-        s3 = session.client('s3', endpoint_url=endpoint_url, aws_access_key_id="test",
-                            aws_secret_access_key="test")
+        s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-        
         # Upload the file
         try:
-            response = s3.upload_file(UPLOAD_FOLDER + filename, 'benawsbucket', filename)
+            response = s3.upload_file(
+                UPLOAD_FOLDER + filename, 'combustifierbucket', filename)
         except ClientError as e:
             print(e)
             return False
         return "complete"
-
 
         #print('upload_image filename: ' + filename)
         #flash('Image successfully uploaded and displayed below')
@@ -101,4 +105,5 @@ def display_image(filename):
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
-app.run()
+if __name__ == "__main__":
+    app.run(port=8080, host='0.0.0.0')
