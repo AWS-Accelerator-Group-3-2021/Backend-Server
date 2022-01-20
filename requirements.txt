@@ -8,3 +8,4 @@ protobuf==3.19.3
 pyOpenSSL==21.0.0
 python-dotenv==0.19.2
 Werkzeug==2.0.2
+boto3==1.20.39
