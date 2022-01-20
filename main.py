@@ -82,21 +82,39 @@ def upload_image():
 
         s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+        
+        rekognition = boto3.Session(region_name='us-east-1').client('rekognition'
+                            , aws_access_key_id=AWS_ACCESS_KEY_ID,
+                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
         # Upload the file
         try:
             response = s3.upload_file(
                 UPLOAD_FOLDER + filename, 'combustifierbucket', filename)
+            rekognition_response = rekognition.detect_labels(Image={
+                'S3Object': {
+                    'Bucket': 'combustifierbucket',
+                    'Name': filename
+                }
+            },
+            MaxLabels=100,
+            MinConfidence=70)
+            print(rekognition_response)
         except ClientError as e:
             print(e)
             return False
-        return "complete"
+        #return response and rekognition_response in a json
+        return Flask.jsonify(
+            {
+                'rekognition_response': rekognition_response,
+                's3_response': response
+            }
+        )
 
         #print('upload_image filename: ' + filename)
         #flash('Image successfully uploaded and displayed below')
         # return render_template('index.html', filename=filename)
 
-        return "Completed"
 
 
 @app.route('/display/<filename>')
