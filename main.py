@@ -2,7 +2,7 @@
 
 import csv
 import boto3
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 import urllib.request
@@ -104,7 +104,7 @@ def upload_image():
             print(e)
             return False
         #return response and rekognition_response in a json
-        return Flask.jsonify(
+        return jsonify(
             {
                 'rekognition_response': rekognition_response,
                 's3_response': response
