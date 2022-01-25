@@ -83,6 +83,7 @@ def upload_image():
         },
             MaxLabels=100,
             MinConfidence=70)
+        print(rekognition_response)
     except ClientError as e:
         print(e)
         return False
