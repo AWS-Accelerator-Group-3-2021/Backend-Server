@@ -69,11 +69,11 @@ def upload_image():
     session = boto3.Session(region_name='us-east-1')
     s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                         aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
         s3.upload_file('tmp.png', 'combustifiertoasterclock', f'{uid}.png')
 
-        rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
-                                                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
         rekognition_response = rekognition.detect_labels(Image={
             'S3Object': {
