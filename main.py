@@ -1,14 +1,17 @@
 # This code is without the Rekognition module
-
+import base64
+import uuid
+from PIL import Image
+from io import BytesIO
 import csv
 import boto3
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from botocore.exceptions import ClientError
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import urllib.request
 import os
 from werkzeug.utils import secure_filename
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
@@ -56,65 +59,45 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def upload_image():
-    if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['file']
-    if file.filename == '':
-        flash('No image selected for uploading')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+    # make uuid
+    uid = str(uuid.uuid4())
+    image = request.json['img']
+    image = Image.open(BytesIO(base64.b64decode(image)))
+    image.save('tmp.png', 'PNG')
+    session = boto3.Session(region_name='us-east-1')
+    s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    try:
+        s3.upload_file('tmp.png', 'combustifierbucket', f'{uid}.png')
 
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-        with open(UPLOAD_FOLDER + filename, 'rb') as source_image:
-            global source_bytes
-            source_bytes = source_image.read()
-
-        #print('upload_image filename: ' + filename)
-        #flash('Image successfully uploaded and displayed below')
-        # return render_template('index.html', filename=filename)
-
-        session = boto3.Session(region_name='us-east-1')
-
-        s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
-                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-        
-        rekognition = boto3.Session(region_name='us-east-1').client('rekognition'
-                            , aws_access_key_id=AWS_ACCESS_KEY_ID,
-                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-
-        # Upload the file
-        try:
-            response = s3.upload_file(
-                UPLOAD_FOLDER + filename, 'combustifierbucket', filename)
-            rekognition_response = rekognition.detect_labels(Image={
-                'S3Object': {
-                    'Bucket': 'combustifierbucket',
-                    'Name': filename
-                }
-            },
+        rekognition_response = rekognition.detect_labels(Image={
+            'S3Object': {
+                'Bucket': 'combustifierbucket',
+                'Name': f'{uid}.png'
+            }
+        },
             MaxLabels=100,
             MinConfidence=70)
-            print(rekognition_response)
-        except ClientError as e:
-            print(e)
-            return False
-        #return response and rekognition_response in a json
-        return jsonify(
-            {
-                'rekognition_response': rekognition_response,
-                's3_response': response
-            }
-        )
+    except ClientError as e:
+        print(e)
+        return False
+        # #return response and rekognition_response in a json
+        # return jsonify(
+        #     {
+        #         'rekognition_response': rekognition_response,
+        #         's3_response': response
+        #     }
+        # )
 
-        #print('upload_image filename: ' + filename)
-        #flash('Image successfully uploaded and displayed below')
-        # return render_template('index.html', filename=filename)
-
+        # #print('upload_image filename: ' + filename)
+        # #flash('Image successfully uploaded and displayed below')
+        # # return render_template('index.html', filename=filename)
+    return rekognition_response
 
 
 @app.route('/display/<filename>')
