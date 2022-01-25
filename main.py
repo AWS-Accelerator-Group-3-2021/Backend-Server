@@ -7,11 +7,12 @@ import csv
 import boto3
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from botocore.exceptions import ClientError
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 import urllib.request
 import os
+
 from werkzeug.utils import secure_filename
-# load_dotenv()
+load_dotenv()
 app = Flask(__name__)
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
@@ -50,7 +51,7 @@ def upload_file(file_name, bucket, object_name=None):
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
         print(e)
-        return False
+        return f"Error: {e}"
     return "complete"
 
 
@@ -72,33 +73,32 @@ def upload_image():
     rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
                                                                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
-        s3.upload_file('tmp.png', 'combustifiertoasterclock', f'{uid}.png')
+        s3.upload_file('tmp.png', 'combustifierbucket', f'{uid}.png')
 
 
         rekognition_response = rekognition.detect_labels(Image={
             'S3Object': {
-                'Bucket': 'combustifiertoasterclock',
+                'Bucket': 'combustifierbucket',
                 'Name': f'{uid}.png'
             }
         },
             MaxLabels=100,
             MinConfidence=70)
-        print(rekognition_response)
     except ClientError as e:
         print(e)
-        return False
-        # #return response and rekognition_response in a json
-        # return jsonify(
-        #     {
-        #         'rekognition_response': rekognition_response,
-        #         's3_response': response
-        #     }
-        # )
-
-        # #print('upload_image filename: ' + filename)
-        # #flash('Image successfully uploaded and displayed below')
-        # # return render_template('index.html', filename=filename)
-    return rekognition_response
+        return f"Error: {e}"
+    rekognition_response = rekognition_response['Labels']
+    #get avg confidence
+    avg_confidence = 0
+    for label in rekognition_response:
+        avg_confidence += label['Confidence']
+    avg_confidence = avg_confidence / len(rekognition_response)
+    names = []
+    for i in rekognition_response:
+        names.append(i['Name'])
+    #return key value pairs
+    
+    return jsonify({'names': names, 'confidence': avg_confidence})
 
 
 @app.route('/display/<filename>')
