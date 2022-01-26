@@ -108,9 +108,9 @@ def upload_image():
             combustible_count += 1
     
     if combustible_count > 0:
-        combustibility = True
+        combustibility = "Yes"
     else:
-        combustibility = False
+        combustibility = "No"
 
     return jsonify({'names': names, 'confidence': avg_confidence, 'combustibility': combustibility})
 
