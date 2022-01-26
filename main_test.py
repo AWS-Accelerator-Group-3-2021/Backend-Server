@@ -67,18 +67,18 @@ def upload_image():
     image = request.json['img']
     image = Image.open(BytesIO(base64.b64decode(image)))
     image.save('tmp.png', 'PNG')
-    session = boto3.Session(region_name='us-east-1')
+    session = boto3.Session(region_name='ap-southeast-1')
     s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                         aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-    rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
+    rekognition = boto3.Session(region_name='ap-southeast-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
                                                                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
-        s3.upload_file('tmp.png', 'combustifierbucket', f'{uid}.png')
+        s3.upload_file('tmp.png', 'combustifiertoasterclock', f'{uid}.png')
 
 
         rekognition_response = rekognition.detect_labels(Image={
             'S3Object': {
-                'Bucket': 'combustifierbucket',
+                'Bucket': 'combustifiertoasterclock',
                 'Name': f'{uid}.png'
             }
         },
