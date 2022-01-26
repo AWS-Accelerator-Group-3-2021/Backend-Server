@@ -5,27 +5,36 @@
 
 
 ## Usage
-
-Add all combustible objects into ```combustiblelist.csv```
-
+```POST Request to ${originURL}:8080/upload ```
+```
+{
+    "img": base64string
+}
+```  
 
 ## Output
-A nested list will be generated  
-<br>
-``` [ ["combustible_item1", ...], ["incombustible_item1", ...] ]```  
-<br>
-Index 0 - Combustible list  
-Index 1 - Incombustible list
+A response from the server is sent to the client.  
+Example:
+```
+{
+   'names': ['Wood, Hardwood, Plywood, Rug, Table], 
+   'confidence': 90,
+   'combustibility': Yes
+}
 
-## Test Cases
-```OriginURL/display/<picture_name>```  
+names: List
+confidence: Integer
+combustibility: String
+```
+
 <br>
-e.g. if your link is ```http://127.0.0.1:5000/``` and the pic file name is cat.png, do ```http://127.0.0.1:5000/display/cat.png``` to see the picture that you have uploaded
 
 ## Credentials
 
-Store keys in ```.aws``` folder  
-Filename to store keys in is ```credentials``` (Follows the AWS SDK Documentation for Boto3)  
+Two Methods:
+1. Store keys in ```.aws``` folder  
+Filename to store keys in is ```credentials```   
+    ##### (Follows the AWS SDK Documentation for Boto3)  
 ```
 If you are using terminal:
 
@@ -37,8 +46,15 @@ nano credentials
 
 << Text editor will pop up in the terminal, follow on screen instructions and save the file >>
 ```
+2. Store keys in ```.env``` file in the directory you are working in 
+```
+/directory/.env
 
-## Usage with Localstack
+AWS_ACCESS_KEY_ID=<your access key>
+AWS_SECRET_ACCESS_KEY=<your secret key>
+```
+
+## Usage with Localstack (ONLY S3)
 
 Change the endpoint_url to your localstack link
 ```
