@@ -95,7 +95,7 @@ def upload_image():
     avg_confidence = avg_confidence / len(rekognition_response)
     names = []
     for i in rekognition_response:
-        names.append(i['Name'])
+        names.append(i['Name'].lower())
     #return key value pairs
 
     #open combustiblelist.txt
