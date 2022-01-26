@@ -97,6 +97,7 @@ def upload_image():
     for i in rekognition_response:
         names.append(i['Name'].lower())
     #return key value pairs
+    print(names)
 
     #open combustiblelist.txt
     combustible_count = 0
@@ -105,6 +106,7 @@ def upload_image():
 
     for i in lines:
         if i in names:
+            print(i)
             combustible_count += 1
     
     if combustible_count > 0:
