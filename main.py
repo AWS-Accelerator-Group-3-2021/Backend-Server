@@ -102,7 +102,7 @@ def upload_image():
     #open combustiblelist.txt
     combustible_count = 0
     with open("combustiblelist.txt") as file:
-        lines = [line.strip() for line in file]  
+        lines = [line.strip() for line in file] 
 
     for i in lines:
         if i in names:

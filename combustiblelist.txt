@@ -18,3 +18,16 @@ gasoline
 petrol
 paper
 wood dust
+tree
+plant
+plants
+trunk
+tree trunk
+machine
+plastic
+leather
+rubber
+carpeting
+curtains
+pillows
+wire insulation
