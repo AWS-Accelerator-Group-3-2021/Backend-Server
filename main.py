@@ -116,6 +116,16 @@ def upload_image():
 
     return jsonify({'names': names, 'confidence': avg_confidence, 'combustibility': combustibility})
 
+@app.route('/clearFiles')
+def clearFiles():
+    session = boto3.Session(region_name='us-east-1')
+    # s3 = session.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+    #                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    s3Resource = boto3.resource('s3')
+    bucket = s3Resource.Bucket('combustifierbucket')
+    bucket.objects.all().delete()
+    return "Cleared all files from AWS S3 Bucket successfully!"
+
 
 @app.route('/display/<filename>')
 def display_image(filename):
