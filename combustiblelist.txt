@@ -31,3 +31,5 @@ carpeting
 curtains
 pillows
 wire insulation
+electronics
+battery
