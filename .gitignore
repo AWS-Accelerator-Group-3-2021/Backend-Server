@@ -17,3 +17,4 @@ urllib3-1.26.8.dist-info/
 static/
 .env
 .DS_STORE
+tmp.png
