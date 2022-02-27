@@ -66,3 +66,4 @@ s3 = session.client('s3', endpoint_url=endpoint_url)
 
 ```
  
+© 2021-2022 The Combustifier Team
