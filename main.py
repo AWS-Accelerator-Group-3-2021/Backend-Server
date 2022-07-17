@@ -17,6 +17,7 @@ app = Flask(__name__)
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+BUCKET_NAME = os.environ.get('BUCKET_NAME')
 
 UPLOAD_FOLDER = 'static/uploads/'
 key = "/.aws/credentials"
@@ -73,7 +74,7 @@ def upload_image():
     rekognition = boto3.Session(region_name='us-east-1').client('rekognition', aws_access_key_id=AWS_ACCESS_KEY_ID,
                                                                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
-        s3.upload_file('tmp.png', 'combustifierbucket', f'{uid}.png')
+        s3.upload_file('tmp.png', BUCKET_NAME, f'{uid}.png')
 
 
         rekognition_response = rekognition.detect_labels(Image={
